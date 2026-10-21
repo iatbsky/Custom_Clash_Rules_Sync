@@ -1,0 +1,62 @@
+name: Sync upstream templates
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # 12:00 Asia/Hong_Kong
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/sync.yml
+      - scripts/sync-templates.mjs
+      - tests/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test template generation
+        run: node --test tests/sync-templates.test.mjs
+
+      - name: Checkout upstream templates
+        uses: actions/checkout@v4
+        with:
+          repository: Aethersailor/Custom_OpenClash_Rules
+          ref: main
+          path: .upstream
+          persist-credentials: false
+          sparse-checkout: cfg
+
+      - name: Sync templates and generate fb variants
+        run: node scripts/sync-templates.mjs .upstream/cfg cfg
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- cfg sync-source.json
+          if git diff --cached --quiet; then
+            echo "Templates are already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync templates from Aethersailor/Custom_OpenClash_Rules"
+          git push origin HEAD:main

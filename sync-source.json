@@ -1,0 +1,16 @@
+{
+  "repository": "Aethersailor/Custom_OpenClash_Rules",
+  "branch": "main",
+  "commit": "6efbdf17763007263a627b48041a14c73fbf4dcb",
+  "templates": [
+    "Custom_Clash.ini",
+    "Custom_Clash_Fallback.ini",
+    "Custom_Clash_Full.ini",
+    "Custom_Clash_Full_Fallback.ini",
+    "Custom_Clash_GFW.ini",
+    "Custom_Clash_GFW_Fallback.ini",
+    "Custom_Clash_Lite.ini",
+    "Custom_Clash_Lite_Fallback.ini",
+    "Custom_Clash_Mainland.ini"
+  ]
+}
