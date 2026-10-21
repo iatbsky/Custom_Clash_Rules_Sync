@@ -68,8 +68,10 @@ test('sync is repeatable, reads only top-level INI files and preserves local fil
     assert.equal(await readFile(join(target, 'fb', 'Custom_Clash.ini'), 'utf8'), first);
     assert.equal(await readFile(join(target, 'Custom_Clash.ini'), 'utf8'), template);
     assert.equal(await readFile(join(target, 'local.ini'), 'utf8'), 'Preserve me');
-    assert.equal(await readFile(join(target, 'clients', 'FlClash.ini'), 'utf8'), customize(buildClientTemplate(template, 'FlClash')));
-    assert.equal(await readFile(join(target, 'clients', 'base.yaml'), 'utf8'), clientBase);
+    assert.equal(await readFile(join(target, 'fb', 'FlClash.ini'), 'utf8'), customize(buildClientTemplate(template, 'FlClash')));
+    assert.equal(await readFile(join(target, 'fb', 'Clash_Verge_Rev.ini'), 'utf8'), customize(buildClientTemplate(template, 'Clash_Verge_Rev')));
+    assert.equal(await readFile(join(target, 'fb', 'base.yaml'), 'utf8'), clientBase);
+    await assert.rejects(readFile(join(target, 'clients', 'FlClash.ini')), { code: 'ENOENT' });
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -88,7 +90,7 @@ test('mobile and desktop keep rule ordering without the nonstandard port overrid
   for (const client of ['FlClash', 'Clash_Verge_Rev']) {
     const output = customize(buildClientTemplate(source, client));
     assert.ok(!output.includes('🔀 非标端口'));
-    assert.ok(output.includes('clash_rule_base=https://raw.githubusercontent.com/iatbsky/Custom_Clash_Rules_Sync/main/cfg/clients/base.yaml'));
+    assert.ok(output.includes('clash_rule_base=https://raw.githubusercontent.com/iatbsky/Custom_Clash_Rules_Sync/main/cfg/fb/base.yaml'));
     const actual = output.split('\n').filter(line => line.startsWith('ruleset='));
     assert.deepEqual(actual.map(line => line.slice(line.indexOf(','))), rules.filter(line => !line.includes('非标端口')).map(line => line.slice(line.indexOf(','))));
     const game = output.split('\n').find(line => line.startsWith('custom_proxy_group=🎮 游戏加速'));

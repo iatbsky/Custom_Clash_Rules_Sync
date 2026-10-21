@@ -54,10 +54,9 @@ export async function syncTemplates(source, target) {
     await writeFile(join(target, name), text, 'utf8');
     await writeFile(join(target, 'fb', name), customize(text), 'utf8');
   }
-  await mkdir(join(target, 'clients'), { recursive: true });
-  await writeFile(join(target, 'clients', 'base.yaml'), clientBase, 'utf8');
+  await writeFile(join(target, 'fb', 'base.yaml'), clientBase, 'utf8');
   for (const { client, text } of clients) {
-    await writeFile(join(target, 'clients', client + '.ini'), text, 'utf8');
+    await writeFile(join(target, 'fb', client + '.ini'), text, 'utf8');
   }
   return names;
 }

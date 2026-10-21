@@ -1,4 +1,4 @@
-const rawRoot = 'https://raw.githubusercontent.com/iatbsky/Custom_Clash_Rules_Sync/main/cfg/clients';
+const rawRoot = 'https://raw.githubusercontent.com/iatbsky/Custom_Clash_Rules_Sync/main/cfg/fb';
 
 export const clientBase = `allow-lan: false
 mode: rule
