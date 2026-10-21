@@ -6,7 +6,19 @@ import { execFileSync } from 'node:child_process';
 export function customize(text) {
   const newline = text.includes('\r\n') ? '\r\n' : '\n';
   const game = 'custom_proxy_group=🎮 游戏加速`select`(V4|V3)';
-  const lines = text.replaceAll('节点`url-test`', '节点`url-test`(^(?!.*V4).*)').split(/\r?\n/);
+  const lines = text.split(/\r?\n/).map(line => {
+    if (!line.startsWith('custom_proxy_group=')) return line;
+    const fields = line.split('`');
+    if (fields[0] === 'custom_proxy_group=🎮 游戏加速') return line;
+    if (!['select', 'url-test', 'fallback', 'load-balance', 'relay'].includes(fields[1])) return line;
+    for (let index = 2; index < fields.length; index++) {
+      const selector = fields[index];
+      if (/^https?:\/\//.test(selector)) break;
+      if (!selector || selector.startsWith('[]')) continue;
+      fields[index] = '^(?!.*V[34]).*(?:' + selector + ')';
+    }
+    return fields.join('`');
+  });
   const result = [];
   for (const line of lines) {
     result.push(line);
