@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { buildClientTemplate, clientBase } from './client-templates.mjs';
 
 export function customize(text) {
   const newline = text.includes('\r\n') ? '\r\n' : '\n';
@@ -42,10 +43,21 @@ export async function syncTemplates(source, target) {
     }
     return { name, text };
   }));
+  const standard = templates.find(template => template.name === 'Custom_Clash.ini');
+  if (!standard) throw new Error('Required upstream standard template missing.');
+  // Validate both derived templates before replacing any generated files.
+  const clients = ['FlClash', 'Clash_Verge_Rev'].map(client => ({
+    client, text: customize(buildClientTemplate(standard.text, client)),
+  }));
   await mkdir(join(target, 'fb'), { recursive: true });
   for (const { name, text } of templates) {
     await writeFile(join(target, name), text, 'utf8');
     await writeFile(join(target, 'fb', name), customize(text), 'utf8');
+  }
+  await mkdir(join(target, 'clients'), { recursive: true });
+  await writeFile(join(target, 'clients', 'base.yaml'), clientBase, 'utf8');
+  for (const { client, text } of clients) {
+    await writeFile(join(target, 'clients', client + '.ini'), text, 'utf8');
   }
   return names;
 }

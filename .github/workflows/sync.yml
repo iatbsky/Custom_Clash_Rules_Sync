@@ -9,6 +9,7 @@ on:
     paths:
       - .github/workflows/sync.yml
       - scripts/sync-templates.mjs
+      - scripts/client-templates.mjs
       - tests/**
 
 permissions:
