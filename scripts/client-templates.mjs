@@ -67,7 +67,7 @@ export function buildClientTemplate(upstream, client) {
   });
   let selected;
   if (mobile) {
-    // Regions are manual groups. Only the global group performs scheduled tests.
+    // Preserve automatic selection within every region using the mobile interval.
     const regions = groups.filter(line => /节点$/.test(line.split('`')[0]));
     const regionRefs = regions.map(line => '[]' + line.split('`')[0].slice('custom_proxy_group='.length));
     const choices = ['[]🚀 手动选择', '[]♻️ 自动选择', ...regionRefs];
@@ -81,7 +81,8 @@ export function buildClientTemplate(upstream, client) {
       ...regions.map(line => {
         const fields = line.split('`');
         const url = fields.findIndex((field, index) => index > 1 && /^https?:\/\//.test(field));
-        return [fields[0], 'select', ...fields.slice(2, url < 0 ? undefined : url)].join('`');
+        return [fields[0], 'url-test', ...fields.slice(2, url < 0 ? undefined : url),
+          url < 0 ? 'https://www.gstatic.com/generate_204' : fields[url], '1800,,100'].join('`');
       }),
       'custom_proxy_group=🎯 全球直连`select`[]DIRECT',
     ];

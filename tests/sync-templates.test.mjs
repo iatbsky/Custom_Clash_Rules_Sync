@@ -98,11 +98,12 @@ test('mobile and desktop keep rule ordering without the nonstandard port overrid
     const groups = output.split('\n').filter(line => line.startsWith('custom_proxy_group='));
     assert.equal(new Set(groups.map(line => line.split('`')[0])).size, groups.length);
     if (client === 'FlClash') {
-      assert.equal(groups.filter(line => line.includes('`url-test`')).length, 1);
-      assert.ok(groups.find(line => line.includes('`url-test`')).endsWith('`1800,,100'));
+      const automated = groups.filter(line => line.includes('`url-test`'));
+      assert.equal(automated.length, 2);
+      assert.ok(automated.every(line => line.endsWith('`1800,,100')));
       assert.ok(output.includes('ruleset=🎬 流媒体,[]GEOSITE,youtube'));
       assert.ok(output.includes('ruleset=🤖 AI服务,[]GEOSITE,openai'));
-      assert.ok(output.includes('custom_proxy_group=🇭🇰 香港节点`select`'));
+      assert.ok(output.includes('custom_proxy_group=🇭🇰 香港节点`url-test`'));
     } else {
       assert.ok(output.includes('ruleset=📹 YouTube,[]GEOSITE,youtube'));
       assert.ok(output.includes('custom_proxy_group=🇭🇰 香港节点`url-test`'));
@@ -135,6 +136,18 @@ test('actual client templates have valid policies and isolated game nodes', asyn
     const groups = lines.filter(line => line.startsWith('custom_proxy_group=')).map(line => line.split('`'));
     const policies = new Set(['DIRECT', 'REJECT', ...groups.map(fields => fields[0].slice('custom_proxy_group='.length))]);
     assert.equal(policies.size, groups.length + 2);
+    if (client === 'FlClash') {
+      const upstreamRegions = upstream.split(/\r?\n/).filter(line =>
+        line.startsWith('custom_proxy_group=') && /节点$/.test(line.split('`')[0]));
+      assert.ok(upstreamRegions.length > 0);
+      for (const region of upstreamRegions) {
+        const generated = groups.find(fields => fields[0] === region.split('`')[0]);
+        assert.ok(generated, region);
+        assert.equal(generated[1], 'url-test');
+        assert.equal(generated.at(-1), '1800,,100');
+      }
+      assert.equal(groups.filter(fields => fields[1] === 'url-test').length, upstreamRegions.length + 1);
+    }
     for (const line of lines.filter(line => line.startsWith('ruleset='))) {
       assert.ok(policies.has(line.slice('ruleset='.length, line.indexOf(','))), line);
     }
