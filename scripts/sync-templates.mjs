@@ -10,7 +10,7 @@ export function customize(text) {
   const lines = text.split(/\r?\n/).map(line => {
     if (!line.startsWith('custom_proxy_group=')) return line;
     const fields = line.split('`');
-    if (fields[0] === 'custom_proxy_group=🎮 游戏加速') return line;
+    if (['custom_proxy_group=🎮 游戏加速', 'custom_proxy_group=🚀 手动选择'].includes(fields[0])) return line;
     if (!['select', 'url-test', 'fallback', 'load-balance', 'relay'].includes(fields[1])) return line;
     for (let index = 2; index < fields.length; index++) {
       const selector = fields[index];

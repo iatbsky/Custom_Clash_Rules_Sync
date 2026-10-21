@@ -22,7 +22,7 @@ test('fb variants preserve regional matching and append the game group', () => {
   assert.equal(customize(template.replaceAll('\n', '\r\n')), result.replaceAll('\n', '\r\n'));
 });
 
-test('all direct node selectors exclude V3 and V4 while game selectors keep them', () => {
+test('manual selection keeps all nodes while other selectors exclude V3 and V4', () => {
   const source = [
     '[custom]',
     'custom_proxy_group=🚀 手动选择`select`[]🇭🇰 香港节点`.*',
@@ -38,7 +38,7 @@ test('all direct node selectors exclude V3 and V4 while game selectors keep them
     const selectors = line.split('`').slice(2).filter(field => !field.startsWith('[]'));
     const pattern = new RegExp(selectors[0]);
     for (const name of ['港 V3', 'HK V4', 'V3 港', 'V4 HK', '美国 V3', '美国 V4']) {
-      assert.equal(pattern.test(name), false, line + ': ' + name);
+      assert.equal(pattern.test(name), line.startsWith('custom_proxy_group=🚀 手动选择'), line + ': ' + name);
     }
     assert.ok(pattern.test(line.includes('其他地区') ? '美国 普通节点' : 'HK 港 普通节点'));
   }
@@ -158,7 +158,7 @@ test('actual client templates have valid policies and isolated game nodes', asyn
           assert.ok(policies.has(field.slice(2)), field);
         } else {
           const regex = new RegExp(field);
-          if (fields[0] === 'custom_proxy_group=🎮 游戏加速') {
+          if (['custom_proxy_group=🎮 游戏加速', 'custom_proxy_group=🚀 手动选择'].includes(fields[0])) {
             assert.ok(regex.test('香港 HK V3'));
             assert.ok(regex.test('香港 HK V4'));
           } else {
