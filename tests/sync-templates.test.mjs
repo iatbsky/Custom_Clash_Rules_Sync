@@ -128,6 +128,7 @@ test('actual client templates have valid policies and isolated game nodes', asyn
   const upstream = await readFile(new URL('../cfg/Custom_Clash.ini', import.meta.url), 'utf8');
   for (const client of ['FlClash', 'Clash_Verge_Rev']) {
     const text = customize(buildClientTemplate(upstream, client));
+    assert.ok(!text.includes('jsdelivr.net'));
     const lines = text.split('\n');
     const groups = lines.filter(line => line.startsWith('custom_proxy_group=')).map(line => line.split('`'));
     const policies = new Set(['DIRECT', 'REJECT', ...groups.map(fields => fields[0].slice('custom_proxy_group='.length))]);

@@ -53,7 +53,10 @@ export function buildClientTemplate(upstream, client) {
   for (const name of ['🚀 手动选择', '♻️ 自动选择', '🐟 漏网之鱼', '🎯 全球直连']) {
     if (!byName.has(name)) throw new Error('Required upstream group missing: ' + name);
   }
-  const rules = lines.filter(line => line.startsWith('ruleset=')).flatMap(line => {
+  const rules = lines.filter(line => line.startsWith('ruleset=')).map(line =>
+    line.replace(/https:\/\/(?:cdn|testingcf)\.jsdelivr\.net\/gh\/Aethersailor\/Custom_OpenClash_Rules@main\//g,
+      'https://raw.githubusercontent.com/Aethersailor/Custom_OpenClash_Rules/main/'),
+  ).flatMap(line => {
     const comma = line.indexOf(',');
     const target = line.slice('ruleset='.length, comma);
     if (target === '🔀 非标端口') return [];
