@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout this repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
 
@@ -37,7 +37,7 @@ jobs:
         run: node --test tests/sync-templates.test.mjs
 
       - name: Checkout upstream templates
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Aethersailor/Custom_OpenClash_Rules
           ref: main
