@@ -1,7 +1,7 @@
 {
   "repository": "Aethersailor/Custom_OpenClash_Rules",
   "branch": "main",
-  "commit": "4c24a48171ff24a5301e2ffb0c81a42b9ff5b121",
+  "commit": "a3431d62b02c1ae05268da3312b5f2040c3d72ee",
   "templates": [
     "Custom_Clash.ini",
     "Custom_Clash_Fallback.ini",
